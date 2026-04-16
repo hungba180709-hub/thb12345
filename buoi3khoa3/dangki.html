@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+     
+</head>
+<body>
+  <script src="https://www.gstatic.com/firebasejs/12.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.8.0/firebase-auth-compat.js"></script>
+    <script src="./configFirebase.js"></script>
+    <script>
+         const inpUername = document.getElementById('inp-username');
+        const inpEmail= document.getElementById('inp-email');
+        const inpPassword = document.getElementById('inp-pwd')
+    </script>
+    
+    <form id="register-form">
+        <h2>Đăng ký tài khoản</h2>
+        <div>
+            <label for="inp-username">Tên đăng nhập:</label>
+            <input type="text" id="inp-username" name="username" required>
+        </div>
+        <div>
+            <label for="inp-email">Email:</label>
+            <input type="email" id="inp-email" name="email" autocomplete="email" required>
+        </div>
+        <div>
+            <label for="inp-pwd">Mật khẩu:</label>
+            <input type="password" id="inp-pwd" name="password" autocomplete="new-password" required>
+        </div>
+        <div>
+            <label for="inp-confirm-pwd">Xác nhận mật khẩu:</label>
+            <input type="password" id="inp-confirm-pwd" name="confirm-password" autocomplete="new-password" required>
+        </div>
+        <button type="submit">Đăng ký</button>
+    </form>
+
+</body>
+</html>

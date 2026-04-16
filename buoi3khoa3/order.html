@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Trang quản lý admin</h1>
+        <div class="header">
+            <h1>Quản lý đơn hàng</h1>
+            <button id="logout-btn">Đăng xuất</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Tổng đơn hàng</h3>
+                <div class="stat-value" id="total-orders">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Đang xử lý</h3>
+                <div class="stat-value" id="processing-orders">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Doanh thu</h3>
+                <div class="stat-value" id="total-revenue">0₫</div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mã đơn hàng</th>
+                        <th>Khách hàng</th>
+                        <th>Số sản phẩm</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày đặt</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody id="order-table-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/12.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore-compat.js"></script>
+    <script src="./configFirebase.js"></script>
+    <script>
+        // Xử lý đăng xuất
+        document.getElementById("logout-btn").addEventListener("click", function () {
+            if (confirm("Bạn có chắc chắn muốn đăng xuất")) {
+                firebase.auth().signOut()
+                    .then(() => {
+                        localStorage.removeItem("user_session");
+                        window.location.href = "./login.html";
+                    })
+                    .catch((error) => {
+                        console.log("Lỗi đăng xuất:", error.message);
+                    });
+            }
+        });
+
+        // Hàm load đơn hàng từ Firestore
+        function loadOrders() {
+            const tableBody = document.querySelector("#order-table-body");
+            let htmls = "";
+            let totalOrders = 0;
+            let processingOrders = 0;
+            let totalRevenue = 0;
+
+            db.collection("orders")
+                .orderBy("orderDate", "desc")
+                .get()
+                .then((querySnapshot) => {
+                    if (querySnapshot.empty) {
+                        tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px; color: #999;">Chưa có đơn hàng nào</td></tr>';
+                        return;
+                    }
+
+                    querySnapshot.forEach((doc) => {
+                        const order = doc.data();
+                        const orderId = doc.id;
+                        
+                        totalOrders++;
+                        if (order.status === "Đang xử lý") {
+                            processingOrders++;
+                        }
+                        totalRevenue += order.totalAmount;
+
+                        // Format ngày
+                        let orderDateStr = 'N/A';
+                        if (order.orderDate && order.orderDate.toDate) {
+                            const date = order.orderDate.toDate();
+                            orderDateStr = date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN');
+                        }
+
+                        htmls += `
+                            <tr>
+                                <td><span class="order-id">${orderId.substring(0, 8)}...</span></td>
+                                <td>
+                                    <strong>${order.userName}</strong><br>
+                                    <small style="color: #999;">${order.userEmail}</small>
+                                </td>
+                                <td>${order.products.length} sản phẩm</td>
+                                <td style="font-weight: 600; color: #667eea;">${order.totalAmount.toLocaleString('vi-VN')}₫</td>
+                                <td>
+                                    <select class="status-select" onchange="updateOrderStatus('${orderId}', this.value)">
+                                        <option value="Đang xử lý" ${order.status === 'Đang xử lý' ? 'selected' : ''}>Đang xử lý</option>
+                                        <option value="Đang giao" ${order.status === 'Đang giao' ? 'selected' : ''}>Đang giao</option>
+                                        <option value="Hoàn thành" ${order.status === 'Hoàn thành' ? 'selected' : ''}>Hoàn thành</option>
+                                        <option value="Đã hủy" ${order.status === 'Đã hủy' ? 'selected' : ''}>Đã hủy</option>
+                                    </select>
+                                </td>
+                                <td><small>${orderDateStr}</small></td>
+                                <td>
+                                    <button class="btn-view" onclick="viewOrderDetail('${orderId}')">Xem</button>
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                    tableBody.innerHTML = htmls;
+                    
+                    // Cập nhật thống kê
+                    document.getElementById('total-orders').textContent = totalOrders;
+                    document.getElementById('processing-orders').textContent = processingOrders;
+                    document.getElementById('total-revenue').textContent = totalRevenue.toLocaleString('vi-VN') + '₫';
+                })
+                .catch((error) => {
+                    console.error("Error fetching orders: ", error);
+                    tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px; color: #d63031;">Lỗi khi tải đơn hàng</td></tr>';
+                });
+        }
+
+        // Xem chi tiết đơn hàng
+        function viewOrderDetail(orderId) {
+            alert('Đang thực hiện');
+        }
+
+        // Cập nhật trạng thái đơn hàng
+        function updateOrderStatus(orderId, newStatus) {
+            if (confirm(`Bạn có chắc chắn muốn cập nhật trạng thái thành "${newStatus}"?`)) {
+                db.collection('orders').doc(orderId).update({
+                    status: newStatus
+                })
+                .then(() => {
+                    alert('Cập nhật trạng thái thành công!');
+                    loadOrders();
+                })
+                .catch((error) => {
+                    console.error('Error updating status:', error);
+                    alert('Lỗi khi cập nhật trạng thái!');
+                    loadOrders();
+                });
+            } else {
+                // Nếu hủy, load lại để reset select về giá trị cũ
+                loadOrders();
+            }
+        }
+
+        // Load đơn hàng khi trang được tải
+        loadOrders();
+</script>
+</body>
+</html>
