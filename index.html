@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop thb</title>
+    <link rel="stylesheet" href="./css/index.css">
+</head>
+
+
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-top">
+            <div class="logo">🛍️ Đại lí ô tô thb </div>
+
+            <div class="search-box">
+                <input type="text" placeholder="Tìm kiếm sản phẩm...">
+                <button>🔍</button>
+            </div>
+
+            <div class="header-actions">
+                <span>👤</span>
+                <span class="cart">
+                    🛒
+                    <span class="cart-badge" id="cart-count">0</span>
+                </span>
+
+
+                <button id="logout-btn">Đăng xuất</button>
+            </div>
+        </div>
+
+        <div class="navbar">
+            <a href="#">Trang chủ</a>
+            <a href="#">Sản phẩm</a>
+            <a href="#">Khuyến mãi</a>
+            <a href="#">Liên hệ</a>
+        </div>
+    </header>
+
+    <!-- CONTENT -->
+    <div class="container">
+        <div id="product-grid" class="product-grid"></div>
+    </div>
+    <div class="cart-overlay" id="cart-overlay"></div>
+    <div class="cart-modal" id="cart-modal">
+        <div class="cart-header">
+            <h2>Giỏ hàng</h2>
+            <button class="close-cart" id="close-cart">&times;</button>
+        </div>
+        <div class="cart-items" id="cart-items">
+            <div class="empty-cart">Giỏ hàng trống</div>
+        </div>
+        <div class="cart-total" id="cart-total">
+            Tổng: 0₫
+        </div>
+        <button class="checkout-btn" id="checkout-btn">Thanh toán</button>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-col">
+                <h4>Đại lí ô tô thb </h4>
+                <p>Website bán hàng chất lượng.</p>
+            </div>
+
+            <div class="footer-col">
+                <h4>Liên kết</h4>
+                <ul>
+                    <li>Trang chủ</li>
+                    <li>Sản phẩm</li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Hỗ trợ</h4>
+                <ul>
+                    <li>Chính sách</li>
+                    <li>Bảo mật</li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Liên hệ</h4>
+                <p>0912345678</p>
+                <p>thb123@gmail.com</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            © 2026 đại lý ô tô thb
+        </div>
+    </footer>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/12.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.8.0/firebase-firestore-compat.js"></script>
+    <script src="./js/configFirebase.js"></script>
+        <script src="./js/index.js"></script>
+
+</body>
+
+</html>
